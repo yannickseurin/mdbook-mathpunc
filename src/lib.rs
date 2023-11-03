@@ -22,15 +22,13 @@ impl Preprocessor for MathpuncPreprocessor {
     }
 }
 
-/// replaces all occurrences of "$p" in `s`, where p is one of the punctuation marks {, . ; :}
+/// replaces all occurrences of "$p" in `s`, where p is zero or one closing parenthesis
+/// followed by one of the five punctuation marks {, . ; : )}
 /// (possibly with zero or more white spaces between the dollar sign and p)
 /// by "p$", except if the dollar sign is escaped with a backslash.
 fn find_and_replace(s: String) -> String {
-    /*
-    this regex expression means "$" followed by zero or more white spaces
-    followed by one of ",", ".", ";", ":", except if "$" is escaped with a backslash
-    */
-    let re = Regex::new(r"(?<!\\)\$\s*(?<punc>[,,.,;,:])").unwrap();
+    // see https://regex101.com/ for an explanation of the regex
+    let re = Regex::new(r"(?<!\\)\$\s*(?<punc>\)?[,,.,;,:,)])").unwrap();
     return re.replace_all(&s, "$punc$$").to_string();
 }
 
@@ -57,7 +55,15 @@ mod tests {
     fn whitespaces() {
         let input = String::from(r"Consider a group $\GG$  , of order $p$ ; and a generator $G$   : for example an elliptic curve $E$ .");
         let output = find_and_replace(input);
-        let expected = r"Consider a group $\GG,$ of order $p;$ and a generator $G:$ for example an elliptic curve $E.$";
+        let expected = String::from(r"Consider a group $\GG,$ of order $p;$ and a generator $G:$ for example an elliptic curve $E.$");
+        assert_eq!(output, expected);
+    }
+
+    #[test]
+    fn parenthesis() {
+        let input = String::from(r"Consider a group $\GG$ (of order $p$), and a generator $G$ (of $\GG$).");
+        let output = find_and_replace(input);
+        let expected = String::from(r"Consider a group $\GG$ (of order $p),$ and a generator $G$ (of $\GG).$");
         assert_eq!(output, expected);
     }
 }
