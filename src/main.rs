@@ -1,8 +1,8 @@
 use clap::{crate_version, Arg, ArgMatches, Command};
-use mdbook::preprocess::{CmdPreprocessor, Preprocessor};
 use mdbook::errors::{Error, Result};
-use semver::{Version, VersionReq};
+use mdbook::preprocess::{CmdPreprocessor, Preprocessor};
 use mdbook_mathpunc::MathpuncPreprocessor;
+use semver::{Version, VersionReq};
 use std::io;
 
 /// Parse CLI options.

@@ -1,7 +1,7 @@
 use fancy_regex::Regex;
 use lazy_static::lazy_static;
 use mdbook::book::{Book, BookItem};
-use mdbook::errors::{Result};
+use mdbook::errors::Result;
 use mdbook::preprocess::{Preprocessor, PreprocessorContext};
 
 /// the preprocessor name
@@ -27,7 +27,6 @@ impl Preprocessor for MathpuncPreprocessor {
     }
 
     fn run(&self, _ctx: &PreprocessorContext, mut book: Book) -> Result<Book> {
-
         book.for_each_mut(|item: &mut BookItem| {
             if let BookItem::Chapter(chapter) = item {
                 chapter.content = find_and_replace(&chapter.content);
@@ -52,9 +51,13 @@ mod tests {
 
     #[test]
     fn basic() {
-        let input = String::from(r"Consider a group $\GG$, of order $p$; and a generator $G$: for example an elliptic curve $E$.");
+        let input = String::from(
+            r"Consider a group $\GG$, of order $p$; and a generator $G$: for example an elliptic curve $E$.",
+        );
         let output = find_and_replace(&input);
-        let expected = String::from(r"Consider a group $\GG,$ of order $p;$ and a generator $G:$ for example an elliptic curve $E.$");
+        let expected = String::from(
+            r"Consider a group $\GG,$ of order $p;$ and a generator $G:$ for example an elliptic curve $E.$",
+        );
         assert_eq!(output, expected);
     }
 
@@ -67,17 +70,23 @@ mod tests {
 
     #[test]
     fn whitespaces() {
-        let input = String::from(r"Consider a group $\GG$  , of order $p$ ; and a generator $G$   : for example an elliptic curve $E$ .");
+        let input = String::from(
+            r"Consider a group $\GG$  , of order $p$ ; and a generator $G$   : for example an elliptic curve $E$ .",
+        );
         let output = find_and_replace(&input);
-        let expected = String::from(r"Consider a group $\GG,$ of order $p;$ and a generator $G:$ for example an elliptic curve $E.$");
+        let expected = String::from(
+            r"Consider a group $\GG,$ of order $p;$ and a generator $G:$ for example an elliptic curve $E.$",
+        );
         assert_eq!(output, expected);
     }
 
     #[test]
     fn parenthesis() {
-        let input = String::from(r"Consider a group $\GG$ (of order $p$), and a generator $G$ (of $\GG$).");
+        let input =
+            String::from(r"Consider a group $\GG$ (of order $p$), and a generator $G$ (of $\GG$).");
         let output = find_and_replace(&input);
-        let expected = String::from(r"Consider a group $\GG$ (of order $p),$ and a generator $G$ (of $\GG).$");
+        let expected =
+            String::from(r"Consider a group $\GG$ (of order $p),$ and a generator $G$ (of $\GG).$");
         assert_eq!(output, expected);
     }
 }
