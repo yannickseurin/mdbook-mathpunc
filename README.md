@@ -7,14 +7,13 @@ An [mdBook](https://github.com/rust-lang/mdBook) preprocessor preventing line br
 Assuming you have mdBook and [mdbook-katex](https://github.com/lzanini/mdbook-katex) installed, install the crate with
 
 ```console
-$ cargo install mdbook-mathpunc
+$ cargo install --git https://github.com/yannickseurin/mdbook-mathpunc
 ```
 
 Then add it as a preprocessor to your `book.toml`:
 
 ```toml
 [preprocessor.mathpunc]
-command = "mdbook-mathpunc"
 before = ["katex"]
 ```
 

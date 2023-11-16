@@ -17,7 +17,7 @@ pub fn make_app() -> Command {
         )
 }
 
-fn handle_preprocessing(pre: &dyn Preprocessor) -> Result<(), Error> {
+fn handle_preprocessing(pre: &dyn Preprocessor) -> Result<()> {
     let (ctx, book) = CmdPreprocessor::parse_input(io::stdin())?;
 
     let book_version = Version::parse(&ctx.mdbook_version)?;
@@ -58,7 +58,7 @@ fn handle_supports(pre: &dyn Preprocessor, sub_args: &ArgMatches) -> Result<()> 
 fn main() -> Result<()> {
     let matches = make_app().get_matches();
 
-    let preprocessor = MathpuncPreprocessor;
+    let preprocessor = MathpuncPreprocessor::new();
 
     if let Some(sub_args) = matches.subcommand_matches("supports") {
         // handle cmdline supports
