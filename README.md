@@ -25,9 +25,11 @@ The `before = ["katex"]` line ensures that mathpunc is run *before* the katex pr
 
 ## Implementation
 
-This is very basic: the preprocessor simply replaces all occurrences of "\$p", where p is zero or one closing parenthesis followed by one of the five punctuation marks {, . ; : )} (possibly with zero or more white spaces between the dollar sign and p) by "p$", except if the dollar sign is escaped with a backslash.
+This is very basic: the preprocessor simply replaces all occurrences of `$p`, where p is zero or one closing parenthesis followed by one of the five punctuation marks `, . ; : )` (possibly with zero or more white spaces between the dollar sign and `p`) by `p$`, except if the dollar sign is escaped with a backslash.
 It does not handle other punctuation marks such as ? or ! as it is uncommon to have a math block followed by these marks.
 It uses the [fancy-regex](https://github.com/fancy-regex/fancy-regex) crate to do this.
+
+Note that this might have unwanted side-effects in case some inline equation starts with a punctuation mark, such as `$,a$` which will be replaced by `,$a$`.
 
 ## TODO
 
