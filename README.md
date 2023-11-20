@@ -1,6 +1,10 @@
 # mdbook-mathpunc
 
-An [mdBook](https://github.com/rust-lang/mdBook) preprocessor preventing line breaks between inline math blocks and punctuation marks.
+[![Crates.io](https://img.shields.io/crates/v/mdbook-mathpunc)](https://crates.io/crates/mdbook-mathpunc)
+[![GitHub License](https://img.shields.io/github/license/yannickseurin/mdbook-mathpunc)](https://github.com/yannickseurin/mdbook-mathpunc/blob/main/LICENSE)
+
+
+An [mdBook](https://github.com/rust-lang/mdBook) preprocessor preventing line breaks between inline math blocks and punctuation marks when using katex.
 
 ## Installation
 

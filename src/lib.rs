@@ -1,17 +1,21 @@
+//! An mdbook preprocessor that prevents line breaks between inline math blocks and punctuation marks when using katex.
+
 use fancy_regex::Regex;
 use lazy_static::lazy_static;
 use mdbook::book::{Book, BookItem};
 use mdbook::errors::Result;
 use mdbook::preprocess::{Preprocessor, PreprocessorContext};
 
-/// the preprocessor name
+/// The preprocessor name.
 const NAME: &str = "mathpunc";
 
+/// The preprocessor.
 pub struct MathpuncPreprocessor;
 
 lazy_static! {
-    // see https://regex101.com/ for an explanation of the regex
+    /// The regex used for replacement.
     static ref RE: Regex =
+        // see https://regex101.com/ for an explanation of the regex
         Regex::new(r"(?<!\\)\$\s*(?P<punc>\)?[,,.,;,:,)])").unwrap();
 }
 
@@ -37,7 +41,7 @@ impl Preprocessor for MathpuncPreprocessor {
     }
 }
 
-/// replaces all occurrences of "$p" in `s`, where p is zero or one closing parenthesis
+/// Replaces all occurrences of "$p" in `s`, where p is zero or one closing parenthesis
 /// followed by one of the five punctuation marks {, . ; : )}
 /// (possibly with zero or more white spaces between the dollar sign and p)
 /// by "p$", except if the dollar sign is escaped with a backslash.
