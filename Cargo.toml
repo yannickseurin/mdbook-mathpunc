@@ -1,7 +1,7 @@
 [package]
 name = "mdbook-mathpunc"
 authors = ["Yannick Seurin"]
-version = "0.1.0"
+version = "0.2.0"
 edition = "2021"
 description = "An mdbook preprocessor that prevents line breaks between inline math blocks and punctuation marks when using katex."
 license = "MIT"

@@ -11,7 +11,7 @@ An [mdBook](https://github.com/rust-lang/mdBook) preprocessor preventing line br
 Assuming you have mdBook and [mdbook-katex](https://github.com/lzanini/mdbook-katex) installed, install the crate with
 
 ```console
-$ cargo install --git https://github.com/yannickseurin/mdbook-mathpunc
+$ cargo install mdbook-mathpunc
 ```
 
 Then add it as a preprocessor to your `book.toml`:
@@ -26,6 +26,7 @@ The `before = ["katex"]` line ensures that mathpunc is run *before* the katex pr
 ## Implementation
 
 This is very basic: the preprocessor simply replaces all occurrences of `$p`, where p is zero or one closing parenthesis followed by one of the five punctuation marks `, . ; : )` (possibly with zero or more white spaces between the dollar sign and `p`) by `p$`, except if the dollar sign is escaped with a backslash.
+If `p` is `:` or `):`, it adds negative space `\!\!` before the colon since it is rendered with extra white space in math mode (for example, when writing `$a$:`, one does not expect any space between `a` and `:`, as would be the case when transforming it in `$a:$`).
 It does not handle other punctuation marks such as ? or ! as it is uncommon to have a math block followed by these marks.
 It uses the [fancy-regex](https://github.com/fancy-regex/fancy-regex) crate to do this.
 

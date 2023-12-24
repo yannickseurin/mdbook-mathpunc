@@ -1,6 +1,6 @@
 //! An mdbook preprocessor that prevents line breaks between inline math blocks and punctuation marks when using katex.
 
-use fancy_regex::Regex;
+use fancy_regex::{Captures, Regex};
 use lazy_static::lazy_static;
 use mdbook::book::{Book, BookItem};
 use mdbook::errors::Result;
@@ -16,7 +16,7 @@ lazy_static! {
     /// The regex used for replacement.
     static ref RE: Regex =
         // see https://regex101.com/ for an explanation of the regex
-        Regex::new(r"(?<!\\)\$\s*(?P<punc>\)?[,,.,;,:,)])").unwrap();
+        Regex::new(r"(?<!\\)\$\s*(?<punc>\)?[,,.,;,:,)])").unwrap();
 }
 
 impl MathpuncPreprocessor {
@@ -46,7 +46,20 @@ impl Preprocessor for MathpuncPreprocessor {
 /// (possibly with zero or more white spaces between the dollar sign and p)
 /// by "p$", except if the dollar sign is escaped with a backslash.
 fn find_and_replace(s: &str) -> String {
-    return RE.replace_all(s, "$punc$$").to_string();
+    // RE.replace_all(s, "$punc$$").to_string()
+    RE.replace_all(s, |caps: &Captures| {
+        match &caps["punc"] {
+            ":" => {
+                r"\!\!:$".to_string()
+            }
+            "):" => {
+                r")\!\!:$".to_string()
+            }
+            _ => {
+                format!("{}$", &caps["punc"])
+            }
+        }
+    }).to_string()
 }
 
 #[cfg(test)]
@@ -60,14 +73,14 @@ mod tests {
         );
         let output = find_and_replace(&input);
         let expected = String::from(
-            r"Consider a group $\GG,$ of order $p;$ and a generator $G:$ for example an elliptic curve $E.$",
+            r"Consider a group $\GG,$ of order $p;$ and a generator $G\!\!:$ for example an elliptic curve $E.$",
         );
         assert_eq!(output, expected);
     }
 
     #[test]
     fn escaped_dollar() {
-        let input = String::from(r"This is an escaped dollar \$, buddy. This as well \& .");
+        let input = String::from(r"This is an escaped dollar \$, don't replace. This as well \& .");
         let output = find_and_replace(&input);
         assert_eq!(output, input);
     }
@@ -79,7 +92,7 @@ mod tests {
         );
         let output = find_and_replace(&input);
         let expected = String::from(
-            r"Consider a group $\GG,$ of order $p;$ and a generator $G:$ for example an elliptic curve $E.$",
+            r"Consider a group $\GG,$ of order $p;$ and a generator $G\!\!:$ for example an elliptic curve $E.$",
         );
         assert_eq!(output, expected);
     }
@@ -91,6 +104,16 @@ mod tests {
         let output = find_and_replace(&input);
         let expected =
             String::from(r"Consider a group $\GG$ (of order $p),$ and a generator $G$ (of $\GG).$");
+        assert_eq!(output, expected);
+    }
+
+    #[test]
+    fn parenthesis_and_colon() {
+        let input =
+            String::from(r"Consider a group $\GG$ (of order $p$):");
+        let output = find_and_replace(&input);
+        let expected =
+            String::from(r"Consider a group $\GG$ (of order $p)\!\!:$");
         assert_eq!(output, expected);
     }
 }
